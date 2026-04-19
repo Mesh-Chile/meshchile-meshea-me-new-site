@@ -1,0 +1,335 @@
+---
+import HomeLayout from '../../layouts/HomeLayout.astro'
+import Footer from '../../components/Footer.astro'
+import { ECOSYSTEM_LINKS } from '../../config/meshtastic-chile'
+---
+
+<HomeLayout
+  title="Registrar perfil de operador — meshea.me"
+  description="Registra tu perfil como operador de la red mesh LoRa en Chile. El proceso es simple: completa el formulario y se abre GitHub con el archivo listo para hacer PR."
+>
+  <nav style="position:sticky;top:0;z-index:50;background:rgba(13,17,23,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="26" height="26" fill="none">
+        <circle cx="6"  cy="16" r="4" fill="#10b981"/>
+        <circle cx="20" cy="8"  r="3" fill="#2563eb"/>
+        <circle cx="20" cy="24" r="3" fill="#2563eb"/>
+        <line x1="6" y1="16" x2="20" y2="8"  stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="6" y1="16" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="20" y1="8" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+      </svg>
+      <span style="font-weight:700;font-size:1rem;color:#f9fafb">meshchile.cl <span style="color:#374151">|</span> meshea.me</span>
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center">
+      <a href="/comunidad" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">← Directorio</a>
+      <a href={ECOSYSTEM_LINKS.foro} target="_blank" rel="noopener" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">Foro</a>
+    </div>
+  </nav>
+
+  <main style="max-width:760px;margin:0 auto;padding:3rem 1.5rem">
+
+    <div style="margin-bottom:2.5rem">
+      <h1 style="font-size:1.9rem;font-weight:700;color:#f9fafb;margin:0 0 0.75rem">Registrar perfil</h1>
+      <p style="color:#9ca3af;line-height:1.75;margin:0 0 1rem">
+        El directorio vive en Git. Completa el formulario, haz click en <strong style="color:#d1d5db">Crear PR</strong>
+        y se abre GitHub con el archivo pre-llenado. Solo necesitas una cuenta de GitHub para enviar el PR.
+      </p>
+      <div style="background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:8px;padding:0.85rem 1rem;font-size:0.875rem;color:#93c5fd">
+        Tu perfil se publica después de que un coordinador haga merge del PR. Normalmente toma menos de 24 horas.
+      </div>
+    </div>
+
+    <form id="form-operador" style="display:flex;flex-direction:column;gap:1.5rem">
+
+      <!-- Identidad -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Identidad</legend>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="slug" style="color:#9ca3af;font-size:0.8rem">Slug (ID del archivo) *</label>
+            <input id="slug" name="slug" required placeholder="ej: juan-valpo" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem;font-family:'JetBrains Mono',monospace" />
+            <span style="color:#6b7280;font-size:0.75rem">Minúsculas, sin espacios, con guiones</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="displayName" style="color:#9ca3af;font-size:0.8rem">Nombre público *</label>
+            <input id="displayName" name="displayName" required placeholder="ej: Juan Pérez (KD6XYZ)" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;grid-column:1/-1">
+            <label for="alias" style="color:#9ca3af;font-size:0.8rem">Alias / callsigns</label>
+            <input id="alias" name="alias" placeholder="ej: KD6XYZ, JVAL (separados por comas)" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Ubicación -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Ubicación</legend>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="region" style="color:#9ca3af;font-size:0.8rem">Región *</label>
+            <select id="region" name="region" required style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem">
+              <option value="">Seleccionar...</option>
+              <option>Arica y Parinacota</option>
+              <option>Tarapacá</option>
+              <option>Antofagasta</option>
+              <option>Atacama</option>
+              <option>Coquimbo</option>
+              <option>Valparaíso</option>
+              <option>Metropolitana</option>
+              <option>O'Higgins</option>
+              <option>Maule</option>
+              <option>Ñuble</option>
+              <option>Biobío</option>
+              <option>Araucanía</option>
+              <option>Los Ríos</option>
+              <option>Los Lagos</option>
+              <option>Aysén</option>
+              <option>Magallanes</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="commune" style="color:#9ca3af;font-size:0.8rem">Comuna</label>
+            <input id="commune" name="commune" placeholder="ej: Viña del Mar" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="precision" style="color:#9ca3af;font-size:0.8rem">Precisión de ubicación *</label>
+            <select id="precision" name="precision" required style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem">
+              <option value="commune">Comuna (aparezco en lista, no en mapa)</option>
+              <option value="region">Solo región</option>
+              <option value="approximate">Aproximada (aparezco en mapa)</option>
+              <option value="exact">Exacta (aparezco en mapa)</option>
+            </select>
+          </div>
+          <div id="coords-section" style="display:none;flex-direction:column;gap:0.35rem">
+            <label for="coords" style="color:#9ca3af;font-size:0.8rem">Coordenadas lat, lng</label>
+            <input id="coords" name="coords" placeholder="ej: -33.024, -71.551" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem;font-family:'JetBrains Mono',monospace" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Frameworks y rol -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Frameworks y rol</legend>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div>
+            <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:0.5rem">Framework(s) que usas *</div>
+            <div style="display:flex;gap:1.5rem">
+              <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+                <input type="checkbox" name="fw-meshtastic" value="meshtastic" style="width:16px;height:16px;accent-color:#2563eb" />
+                Meshtastic
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+                <input type="checkbox" name="fw-meshcore" value="meshcore" style="width:16px;height:16px;accent-color:#f59e0b" />
+                MeshCore
+              </label>
+            </div>
+          </div>
+          <div>
+            <div style="color:#9ca3af;font-size:0.8rem;margin-bottom:0.5rem">Rol(es)</div>
+            <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+                <input type="checkbox" name="role-operator" value="operator" checked style="width:16px;height:16px;accent-color:#2563eb" />
+                Operador
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+                <input type="checkbox" name="role-coordinator" value="coordinator" style="width:16px;height:16px;accent-color:#2563eb" />
+                Coordinador
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+                <input type="checkbox" name="role-contributor" value="contributor" style="width:16px;height:16px;accent-color:#2563eb" />
+                Contribuidor
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Contacto -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Contacto (todo opcional)</legend>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="telegram" style="color:#9ca3af;font-size:0.8rem">Telegram</label>
+            <input id="telegram" name="telegram" placeholder="@usuario" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="foro" style="color:#9ca3af;font-size:0.8rem">Handle en el foro</label>
+            <input id="foro" name="foro" placeholder="ej: juan-valpo" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="website" style="color:#9ca3af;font-size:0.8rem">Sitio web</label>
+            <input id="website" name="website" placeholder="https://..." style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="discord" style="color:#9ca3af;font-size:0.8rem">Discord</label>
+            <input id="discord" name="discord" placeholder="usuario#0000" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Disponibilidad -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Disponibilidad</legend>
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          <label style="display:flex;align-items:center;gap:0.5rem;color:#d1d5db;font-size:0.9rem;cursor:pointer">
+            <input type="checkbox" id="helpsNewcomers" name="helpsNewcomers" style="width:16px;height:16px;accent-color:#2563eb" />
+            Puedo ayudar a recién llegados
+          </label>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="covers" style="color:#9ca3af;font-size:0.8rem">Zonas donde das cobertura</label>
+            <input id="covers" name="covers" placeholder="ej: Santiago sur-oriente, Cordillera RM (separadas por comas)" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Bio y extras -->
+      <fieldset style="border:1px solid #1f2937;border-radius:10px;padding:1.5rem">
+        <legend style="color:#f9fafb;font-weight:600;font-size:0.875rem;padding:0 0.5rem">Bio y extras</legend>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="bio" style="color:#9ca3af;font-size:0.8rem">Bio (párrafo libre)</label>
+            <textarea id="bio" name="bio" rows="4" placeholder="Cuéntale a la comunidad quién eres y por qué estás en la red..." style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem;resize:vertical;font-family:inherit"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="tags" style="color:#9ca3af;font-size:0.8rem">Tags</label>
+            <input id="tags" name="tags" placeholder="ej: cordillera, solar, devops (separados por comas)" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <label for="joinedAt" style="color:#9ca3af;font-size:0.8rem">Desde cuándo estás en la red *</label>
+            <input id="joinedAt" name="joinedAt" required placeholder="ej: 2024-09" style="background:#111827;border:1px solid #374151;color:#f9fafb;padding:0.5rem 0.75rem;border-radius:6px;font-size:0.9rem;font-family:'JetBrains Mono',monospace" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Preview del YAML -->
+      <div>
+        <div style="color:#9ca3af;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Vista previa del archivo</div>
+        <pre id="yaml-preview" style="background:#0a0e1a;border:1px solid #1f2937;border-radius:8px;padding:1rem;font-size:0.8rem;color:#9ca3af;overflow-x:auto;line-height:1.6;min-height:120px">Completa el formulario para ver la vista previa...</pre>
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <button type="button" id="btn-preview" style="border:1px solid #374151;background:transparent;color:#d1d5db;padding:0.65rem 1.25rem;border-radius:8px;cursor:pointer;font-size:0.9rem">
+          Actualizar vista previa
+        </button>
+        <button type="button" id="btn-pr" style="background:#2563eb;color:#fff;padding:0.65rem 1.5rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600">
+          Crear PR en GitHub →
+        </button>
+      </div>
+
+    </form>
+
+  </main>
+
+  <Footer />
+</HomeLayout>
+
+<script>
+  const form = document.getElementById('form-operador') as HTMLFormElement
+  const yamlPre = document.getElementById('yaml-preview') as HTMLPreElement
+  const btnPreview = document.getElementById('btn-preview') as HTMLButtonElement
+  const btnPr = document.getElementById('btn-pr') as HTMLButtonElement
+  const precisionSel = document.getElementById('precision') as HTMLSelectElement
+  const coordsSection = document.getElementById('coords-section') as HTMLDivElement
+
+  precisionSel?.addEventListener('change', () => {
+    const needsCoords = ['exact', 'approximate'].includes(precisionSel.value)
+    coordsSection.style.display = needsCoords ? 'flex' : 'none'
+  })
+
+  function val(id: string) {
+    return (document.getElementById(id) as HTMLInputElement)?.value?.trim() ?? ''
+  }
+  function checked(name: string) {
+    return (document.querySelector(`[name="${name}"]`) as HTMLInputElement)?.checked ?? false
+  }
+
+  function buildYaml() {
+    const slug        = val('slug')
+    const displayName = val('displayName')
+    const alias       = val('alias').split(',').map(s => s.trim()).filter(Boolean)
+    const region      = val('region')
+    const commune     = val('commune')
+    const precision   = val('precision') || 'commune'
+    const coords      = val('coords')
+    const telegram    = val('telegram')
+    const foro        = val('foro')
+    const website     = val('website')
+    const discord     = val('discord')
+    const helpsNew    = checked('helpsNewcomers')
+    const covers      = val('covers').split(',').map(s => s.trim()).filter(Boolean)
+    const bio         = val('bio')
+    const tags        = val('tags').split(',').map(s => s.trim()).filter(Boolean)
+    const joinedAt    = val('joinedAt')
+
+    const fws: string[] = []
+    if (checked('fw-meshtastic')) fws.push('meshtastic')
+    if (checked('fw-meshcore'))   fws.push('meshcore')
+
+    const roles: string[] = []
+    if (checked('role-operator'))    roles.push('operator')
+    if (checked('role-coordinator')) roles.push('coordinator')
+    if (checked('role-contributor')) roles.push('contributor')
+
+    let coordLine = ''
+    if (['exact', 'approximate'].includes(precision) && coords) {
+      const parts = coords.split(',').map(s => parseFloat(s.trim()))
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        coordLine = `  coords: [${parts[0]}, ${parts[1]}]\n`
+      }
+    }
+
+    let yaml = `---\ndisplayName: "${displayName}"\n`
+    if (alias.length) yaml += `alias: [${alias.map(a => `"${a}"`).join(', ')}]\n`
+    yaml += `location:\n  region: "${region}"\n`
+    if (commune) yaml += `  commune: "${commune}"\n`
+    yaml += `  precision: "${precision}"\n`
+    yaml += coordLine
+    yaml += `frameworks: [${fws.map(f => `"${f}"`).join(', ')}]\n`
+    yaml += `role: [${roles.map(r => `"${r}"`).join(', ')}]\n`
+
+    const contactLines: string[] = []
+    if (telegram) contactLines.push(`  telegram: "${telegram}"`)
+    if (foro)     contactLines.push(`  foro: "${foro}"`)
+    if (website)  contactLines.push(`  website: "${website}"`)
+    if (discord)  contactLines.push(`  discord: "${discord}"`)
+    if (contactLines.length) yaml += `contact:\n${contactLines.join('\n')}\n`
+
+    yaml += `availability:\n`
+    yaml += `  dmOpen: false\n`
+    yaml += `  helpsNewcomers: ${helpsNew}\n`
+    if (covers.length) yaml += `  covers: [${covers.map(c => `"${c}"`).join(', ')}]\n`
+
+    yaml += `joinedAt: "${joinedAt}"\n`
+    yaml += `tags: [${tags.map(t => `"${t}"`).join(', ')}]\n`
+    yaml += `---\n\n${bio}`
+
+    return { yaml, slug }
+  }
+
+  btnPreview?.addEventListener('click', () => {
+    const { yaml } = buildYaml()
+    yamlPre.textContent = yaml
+  })
+
+  btnPr?.addEventListener('click', () => {
+    const { yaml, slug } = buildYaml()
+    if (!slug || !val('displayName') || !val('region') || !val('joinedAt')) {
+      alert('Completa los campos obligatorios (slug, nombre, región, desde cuándo).')
+      return
+    }
+    const filename = `${slug}.md`
+    const encoded  = encodeURIComponent(yaml)
+    const url = `https://github.com/n3v1l/meshea.me/new/main/src/content/operators/?filename=${filename}&value=${encoded}`
+    window.open(url, '_blank')
+  })
+
+  // auto-preview on form changes
+  form?.addEventListener('change', () => {
+    const { yaml } = buildYaml()
+    yamlPre.textContent = yaml
+  })
+  form?.addEventListener('input', () => {
+    const { yaml } = buildYaml()
+    yamlPre.textContent = yaml
+  })
+</script>

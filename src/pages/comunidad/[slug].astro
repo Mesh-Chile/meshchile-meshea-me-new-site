@@ -1,0 +1,253 @@
+---
+import { getCollection, render } from 'astro:content'
+import HomeLayout from '../../layouts/HomeLayout.astro'
+import Footer from '../../components/Footer.astro'
+import { ECOSYSTEM_LINKS } from '../../config/meshtastic-chile'
+
+export async function getStaticPaths() {
+  const operators = await getCollection('operators')
+  return operators.map(op => ({ params: { slug: op.id }, props: { op } }))
+}
+
+const { op } = Astro.props
+const { Content } = await render(op)
+const d = op.data
+
+const ROLE_MAP: Record<string, string> = {
+  operator: 'Operador',
+  coordinator: 'Coordinador',
+  contributor: 'Contribuidor',
+}
+const NODE_ROLE_MAP: Record<string, string> = {
+  client: 'Cliente',
+  router: 'Router',
+  repeater: 'Repetidor',
+  router_late: 'Router Late',
+  tracker: 'Tracker',
+}
+
+function frameworkColor(fw: string) {
+  return fw === 'meshtastic'
+    ? { bg: 'rgba(37,99,235,0.15)', border: '#1d4ed8', color: '#93c5fd' }
+    : { bg: 'rgba(245,158,11,0.12)', border: '#78350f', color: '#fcd34d' }
+}
+---
+
+<HomeLayout
+  title={`${d.displayName} — meshea.me`}
+  description={`Perfil de operador mesh en ${d.location.region}, Chile.`}
+>
+  <nav style="position:sticky;top:0;z-index:50;background:rgba(13,17,23,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="26" height="26" fill="none">
+        <circle cx="6"  cy="16" r="4" fill="#10b981"/>
+        <circle cx="20" cy="8"  r="3" fill="#2563eb"/>
+        <circle cx="20" cy="24" r="3" fill="#2563eb"/>
+        <line x1="6" y1="16" x2="20" y2="8"  stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="6" y1="16" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="20" y1="8" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+      </svg>
+      <span style="font-weight:700;font-size:1rem;color:#f9fafb">meshchile.cl <span style="color:#374151">|</span> meshea.me</span>
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center">
+      <a href="/comunidad" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">← Directorio</a>
+      <a href={ECOSYSTEM_LINKS.foro} target="_blank" rel="noopener" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">Foro</a>
+    </div>
+  </nav>
+
+  <main style="max-width:900px;margin:0 auto;padding:3rem 1.5rem">
+
+    <!-- Header del perfil -->
+    <div style="border:1px solid #1f2937;border-radius:14px;padding:2rem;margin-bottom:2rem;background:rgba(255,255,255,0.02)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
+        <div>
+          <h1 style="font-size:1.9rem;font-weight:700;color:#f9fafb;margin:0 0 0.35rem">{d.displayName}</h1>
+          {d.alias && d.alias.length > 0 && (
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#6b7280">
+              {d.alias.join(' · ')}
+            </div>
+          )}
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          {d.role.map(r => (
+            <span style={`font-size:0.75rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;background:${r === 'coordinator' ? 'rgba(37,99,235,0.2)' : 'rgba(255,255,255,0.07)'};color:${r === 'coordinator' ? '#93c5fd' : '#9ca3af'}`}>
+              {ROLE_MAP[r] ?? r}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+
+        <div>
+          <div style="font-size:0.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Ubicación</div>
+          <div style="color:#d1d5db;font-size:0.9rem">
+            {d.location.commune ? `${d.location.commune}, ` : ''}{d.location.region}
+          </div>
+          <div style="font-size:0.75rem;color:#6b7280;margin-top:0.15rem">
+            Precisión: {d.location.precision}
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:0.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Frameworks</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+            {d.frameworks.map(fw => {
+              const c = frameworkColor(fw)
+              return (
+                <span style={`background:${c.bg};border:1px solid ${c.border};color:${c.color};font-size:0.75rem;font-weight:600;padding:0.2rem 0.55rem;border-radius:999px`}>
+                  {fw === 'meshtastic' ? 'Meshtastic' : 'MeshCore'}
+                </span>
+              )
+            })}
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:0.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">En la red desde</div>
+          <div style="color:#d1d5db;font-size:0.9rem">{d.joinedAt}</div>
+        </div>
+
+        {d.availability.helpsNewcomers && (
+          <div>
+            <div style="font-size:0.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem">Disponibilidad</div>
+            <span style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;font-size:0.75rem;font-weight:600;padding:0.2rem 0.55rem;border-radius:999px">
+              Ayuda a recién llegados
+            </span>
+          </div>
+        )}
+
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:flex-start">
+
+      <!-- Columna principal: bio + nodos -->
+      <div>
+
+        <!-- Bio -->
+        <div style="margin-bottom:2rem">
+          <div style="font-size:1rem;color:#9ca3af;line-height:1.8;prose">
+            <Content />
+          </div>
+        </div>
+
+        <!-- Zonas de cobertura -->
+        {d.availability.covers && d.availability.covers.length > 0 && (
+          <div style="margin-bottom:2rem">
+            <h2 style="font-size:1rem;font-weight:600;color:#f9fafb;margin:0 0 0.75rem">Cobertura</h2>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+              {d.availability.covers.map(zone => (
+                <span style="background:#111827;border:1px solid #1f2937;color:#9ca3af;font-size:0.8rem;padding:0.25rem 0.65rem;border-radius:6px">
+                  {zone}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Nodos -->
+        {d.nodes && d.nodes.length > 0 && (
+          <div>
+            <h2 style="font-size:1rem;font-weight:600;color:#f9fafb;margin:0 0 0.75rem">Nodos</h2>
+            <div style="display:flex;flex-direction:column;gap:0.65rem">
+              {d.nodes.map(node => {
+                const c = frameworkColor(node.framework)
+                return (
+                  <div style={`border:1px solid ${node.active ? '#1f2937' : '#111827'};border-radius:8px;padding:0.85rem 1rem;background:${node.active ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.2)'};display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap`}>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem">
+                        <span style={`font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;color:${node.active ? '#f9fafb' : '#6b7280'}`}>{node.shortName}</span>
+                        <span style={`width:7px;height:7px;border-radius:50%;background:${node.active ? '#10b981' : '#6b7280'};flex-shrink:0`}></span>
+                        <span style={`font-size:0.75rem;color:${node.active ? '#9ca3af' : '#6b7280'}`}>{node.active ? 'activo' : 'inactivo'}</span>
+                      </div>
+                      <div style={`font-size:0.875rem;color:${node.active ? '#d1d5db' : '#6b7280'}`}>{node.longName}</div>
+                      <div style="font-size:0.775rem;color:#6b7280;margin-top:0.15rem">{node.hardware}</div>
+                    </div>
+                    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;justify-content:flex-end">
+                      <span style={`background:${c.bg};border:1px solid ${c.border};color:${c.color};font-size:0.7rem;font-weight:600;padding:0.15rem 0.45rem;border-radius:999px`}>
+                        {node.framework === 'meshtastic' ? 'Meshtastic' : 'MeshCore'}
+                      </span>
+                      <span style="background:#111827;border:1px solid #1f2937;color:#9ca3af;font-size:0.7rem;font-weight:500;padding:0.15rem 0.45rem;border-radius:999px">
+                        {NODE_ROLE_MAP[node.role] ?? node.role}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Columna lateral: contacto + tags -->
+      <div>
+
+        <!-- Contacto -->
+        {Object.values(d.contact).some(v => v != null) && (
+          <div style="border:1px solid #1f2937;border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;background:rgba(255,255,255,0.02)">
+            <h3 style="font-size:0.85rem;font-weight:600;color:#f9fafb;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 0.9rem">Contacto</h3>
+            <div style="display:flex;flex-direction:column;gap:0.55rem">
+              {d.contact.telegram && (
+                <a href={`https://t.me/${d.contact.telegram.replace('@','')}`} target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-size:0.875rem">
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                  {d.contact.telegram}
+                </a>
+              )}
+              {d.contact.foro && (
+                <a href={`${ECOSYSTEM_LINKS.foro}/u/${d.contact.foro}`} target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-size:0.875rem">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                  @{d.contact.foro} en el foro
+                </a>
+              )}
+              {d.contact.website && (
+                <a href={d.contact.website} target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-size:0.875rem">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  {new URL(d.contact.website).hostname}
+                </a>
+              )}
+              {d.contact.discord && (
+                <span style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;font-size:0.875rem">
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                  {d.contact.discord}
+                </span>
+              )}
+              {d.contact.email && (
+                <a href={`mailto:${d.contact.email}`} style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-size:0.875rem">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                  {d.contact.email}
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        <!-- Tags -->
+        {d.tags.length > 0 && (
+          <div style="border:1px solid #1f2937;border-radius:10px;padding:1.25rem;background:rgba(255,255,255,0.02)">
+            <h3 style="font-size:0.85rem;font-weight:600;color:#f9fafb;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 0.75rem">Tags</h3>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+              {d.tags.map(tag => (
+                <span style="background:#111827;border:1px solid #1f2937;color:#6b7280;font-size:0.8rem;padding:0.2rem 0.55rem;border-radius:6px">#{tag}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Edit on GitHub -->
+        <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #1f2937">
+          <a href={`https://github.com/n3v1l/meshea.me/edit/main/src/content/operators/${op.id}.md`}
+             target="_blank" rel="noopener"
+             style="display:flex;align-items:center;gap:0.4rem;color:#6b7280;text-decoration:none;font-size:0.8rem">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Editar en GitHub
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <Footer />
+</HomeLayout>

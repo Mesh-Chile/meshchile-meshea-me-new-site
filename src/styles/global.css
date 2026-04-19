@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand:   #2563eb;
+  --color-accent:  #10b981;
+  --color-signal:  #38bdf8;
+  --color-surface: #0d1117;
+  --color-surface-2: #111827;
+
+  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Starlight theme overrides */
+:root {
+  --sl-font: "Inter", system-ui, sans-serif;
+  --sl-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --sl-color-accent-low:  #1e3a8a;
+  --sl-color-accent:      #2563eb;
+  --sl-color-accent-high: #93c5fd;
+}
+
+:root[data-theme="dark"] {
+  --sl-color-bg:         #0d1117;
+  --sl-color-bg-sidebar: #0f1724;
+  --sl-color-hairline:   #1f2937;
+}
+
+/* Mono para datos técnicos (frecuencias, MQTT, etc.) */
+code, kbd, samp, .mono {
+  font-family: var(--font-family-mono);
+}

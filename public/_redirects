@@ -1,0 +1,5 @@
+# Redirect del dominio viejo mientras viva
+# Configurar en Cloudflare: meshtasticame.cl apunta al mismo proyecto Pages
+# y este archivo maneja el redirect 301 permanente.
+https://meshtasticame.cl/* https://meshea.me/:splat 301
+https://www.meshtasticame.cl/* https://meshea.me/:splat 301

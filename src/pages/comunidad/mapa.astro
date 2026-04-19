@@ -1,0 +1,142 @@
+---
+import { getCollection } from 'astro:content'
+import HomeLayout from '../../layouts/HomeLayout.astro'
+import Footer from '../../components/Footer.astro'
+import { ECOSYSTEM_LINKS } from '../../config/meshtastic-chile'
+
+const operators = await getCollection('operators')
+
+const mappable = operators
+  .filter(op => ['exact', 'approximate'].includes(op.data.location.precision) && op.data.location.coords)
+  .map(op => ({
+    id: op.id,
+    displayName: op.data.displayName,
+    alias: op.data.alias ?? [],
+    lat: op.data.location.coords![0],
+    lng: op.data.location.coords![1],
+    precision: op.data.location.precision,
+    region: op.data.location.region,
+    commune: op.data.location.commune ?? '',
+    frameworks: op.data.frameworks,
+    role: op.data.role,
+    helpsNewcomers: op.data.availability.helpsNewcomers,
+    activeNodes: (op.data.nodes ?? []).filter(n => n.active).length,
+  }))
+
+const listed = operators.filter(
+  op => !['exact', 'approximate'].includes(op.data.location.precision) || !op.data.location.coords
+)
+---
+
+<HomeLayout
+  title="Mapa de operadores — meshea.me"
+  description="Mapa geográfico de operadores de la red mesh LoRa en Chile."
+>
+  <nav style="position:sticky;top:0;z-index:50;background:rgba(13,17,23,0.92);backdrop-filter:blur(8px);border-bottom:1px solid #1f2937;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="26" height="26" fill="none">
+        <circle cx="6"  cy="16" r="4" fill="#10b981"/>
+        <circle cx="20" cy="8"  r="3" fill="#2563eb"/>
+        <circle cx="20" cy="24" r="3" fill="#2563eb"/>
+        <line x1="6" y1="16" x2="20" y2="8"  stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="6" y1="16" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+        <line x1="20" y1="8" x2="20" y2="24" stroke="#38bdf8" stroke-width="1.5"/>
+      </svg>
+      <span style="font-weight:700;font-size:1rem;color:#f9fafb">meshchile.cl <span style="color:#374151">|</span> meshea.me</span>
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center">
+      <a href="/comunidad" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">← Directorio</a>
+      <a href={ECOSYSTEM_LINKS.mapa} target="_blank" rel="noopener" style="color:#9ca3af;text-decoration:none;font-size:0.875rem">Mapa de nodos</a>
+    </div>
+  </nav>
+
+  <main style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem">
+
+    <div style="margin-bottom:1.5rem">
+      <h1 style="font-size:1.7rem;font-weight:700;color:#f9fafb;margin:0 0 0.4rem">Mapa de operadores</h1>
+      <p style="color:#9ca3af;font-size:0.9rem;margin:0">
+        Solo se muestran operadores con precisión <code style="background:#111827;padding:0.1rem 0.3rem;border-radius:4px;color:#93c5fd">exact</code> o <code style="background:#111827;padding:0.1rem 0.3rem;border-radius:4px;color:#93c5fd">approximate</code>.
+        Los de precisión <code style="background:#111827;padding:0.1rem 0.3rem;border-radius:4px;color:#9ca3af">commune</code> o <code style="background:#111827;padding:0.1rem 0.3rem;border-radius:4px;color:#9ca3af">region</code> aparecen en la lista lateral.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:1.25rem;align-items:flex-start">
+
+      <!-- Mapa -->
+      <div id="mapa-operadores" style="height:540px;border-radius:12px;border:1px solid #1f2937;overflow:hidden;background:#0a0e1a"></div>
+
+      <!-- Lista lateral: sin coords -->
+      <div>
+        <h2 style="font-size:0.85rem;font-weight:600;color:#f9fafb;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 0.75rem">
+          Sin ubicación exacta ({listed.length})
+        </h2>
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          {listed.map(op => (
+            <a href={`/comunidad/${op.id}`}
+               style="border:1px solid #1f2937;border-radius:8px;padding:0.75rem;text-decoration:none;background:rgba(255,255,255,0.02)">
+              <div style="font-weight:500;color:#d1d5db;font-size:0.875rem">{op.data.displayName}</div>
+              <div style="font-size:0.775rem;color:#6b7280;margin-top:0.2rem">
+                {op.data.location.commune ? `${op.data.location.commune}, ` : ''}{op.data.location.region}
+              </div>
+            </a>
+          ))}
+          {listed.length === 0 && (
+            <p style="color:#6b7280;font-size:0.825rem;font-style:italic">Todos los operadores tienen coordenadas.</p>
+          )}
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <Footer />
+</HomeLayout>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script define:vars={{ mappable }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    // @ts-ignore
+    const L = window.L
+    if (!L) return
+
+    const map = L.map('mapa-operadores', {
+      center: [-35.5, -71.5],
+      zoom: 5,
+    })
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      maxZoom: 18,
+    }).addTo(map)
+
+    const icon = (isApprox) => L.divIcon({
+      className: '',
+      html: `<div style="width:12px;height:12px;border-radius:50%;background:${isApprox ? '#2563eb' : '#10b981'};border:2px solid ${isApprox ? '#93c5fd' : '#6ee7b7'};box-shadow:0 0 8px ${isApprox ? 'rgba(37,99,235,0.6)' : 'rgba(16,185,129,0.6)'}"></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    })
+
+    mappable.forEach(op => {
+      const isApprox = op.precision === 'approximate'
+      const marker = L.marker([op.lat, op.lng], { icon: icon(isApprox) }).addTo(map)
+
+      const fwBadges = op.frameworks.map(fw =>
+        `<span style="background:${fw === 'meshtastic' ? 'rgba(37,99,235,0.2)' : 'rgba(245,158,11,0.2)'};color:${fw === 'meshtastic' ? '#93c5fd' : '#fcd34d'};font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:999px;font-weight:600">${fw === 'meshtastic' ? 'Meshtastic' : 'MeshCore'}</span>`
+      ).join(' ')
+
+      marker.bindPopup(`
+        <div style="min-width:180px;font-family:system-ui,sans-serif">
+          <strong style="font-size:0.9rem">${op.displayName}</strong>
+          ${op.alias.length ? `<div style="font-size:0.75rem;color:#888;font-family:monospace">${op.alias.slice(0,2).join(' · ')}</div>` : ''}
+          <div style="margin:0.4rem 0 0.35rem;font-size:0.78rem;color:#666">${op.commune ? op.commune + ', ' : ''}${op.region}</div>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.5rem">${fwBadges}</div>
+          ${op.activeNodes > 0 ? `<div style="font-size:0.75rem;color:#888">${op.activeNodes} nodo${op.activeNodes !== 1 ? 's' : ''} activo${op.activeNodes !== 1 ? 's' : ''}</div>` : ''}
+          <a href="/comunidad/${op.id}" style="display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:#2563eb;text-decoration:none">Ver perfil →</a>
+        </div>
+      `)
+    })
+  })
+</script>
