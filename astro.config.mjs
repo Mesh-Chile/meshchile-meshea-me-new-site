@@ -14,9 +14,9 @@ export default defineConfig({
       logo: { src: './src/assets/logo.svg', alt: 'meshea.me' },
       customCss: ['./src/styles/global.css'],
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/n3v1l/meshea.me' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/Mesh-Chile/meshchile-meshea-me-new-site' },
       ],
-      editLink: { baseUrl: 'https://github.com/n3v1l/meshea.me/edit/main/' },
+      editLink: { baseUrl: 'https://github.com/Mesh-Chile/meshchile-meshea-me-new-site/edit/main/' },
       sidebar: [
         {
           label: 'Fundamentos',
